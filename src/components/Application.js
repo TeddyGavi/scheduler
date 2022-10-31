@@ -16,15 +16,8 @@ export default function Application(props) {
     interviewers: {},
   });
 
-  // const dailyAppointments = [];
 
   const setDay = day => setState({ ...state, day })
- /*  const setDays = days => setState((prev) => ({ ...prev, days }))
-
-  useEffect(() => {
-    axios.get("http://localhost:8001/api/days").then((res) => { setDays([...res.data]) })
-
-  }, []) */
 
   useEffect(() => {
     Promise.all([

@@ -5,7 +5,7 @@ import "components/Application.scss";
 import DayList from "./DayList";
 import "components/Appointment";
 import Appointment from "./Appointment";
-import { getAppointmentsForDay, getInterview } from 'helpers/selectors';
+import { getAppointmentsForDay, getInterview, getInterviewersForDay } from 'helpers/selectors';
 
 
 export default function Application(props) {
@@ -16,8 +16,11 @@ export default function Application(props) {
     interviewers: {},
   });
 
-
   const setDay = day => setState({ ...state, day })
+
+  function bookInterview(id, interview) {
+    console.log(id, interview)
+  }
 
   useEffect(() => {
     Promise.all([
@@ -31,6 +34,7 @@ export default function Application(props) {
   }, [])
 
   const apptPerDay = getAppointmentsForDay(state, state.day)
+  const interviewersPerDay = getInterviewersForDay(state, state.day)
 
   const appointment = apptPerDay.map(x => {
     const interview = getInterview(state, x.interview)
@@ -39,6 +43,8 @@ export default function Application(props) {
         key={x.id}
         {...x}
         interview={interview}
+        bookInterview={bookInterview}
+        interviewers={interviewersPerDay}
       />
     )
   })

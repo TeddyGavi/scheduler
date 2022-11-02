@@ -28,12 +28,13 @@ export default function Form(props) {
             className="appointment__create-input text--semi-bold"
             name="name"
             type="text"
+            autoFocus="1"
             placeholder="Enter Student Name"
           />
         </form>
         <InterviewList
         value={interviewer}
-        interviewers={props.interviewer}
+        interviewers={props.interviewers}
         onChange={setInterviewer}
         />
       </section>

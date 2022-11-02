@@ -12,14 +12,30 @@ export default function Application(props) {
   const [state, setState] = useState({
     day: "Monday",
     days: [],
-    appointments: {},
+    appointments: {
+      "1": {
+        id: 1,
+        time: "12pm",
+        interview: null
+      }
+    },
     interviewers: {},
   });
 
   const setDay = day => setState({ ...state, day })
 
   function bookInterview(id, interview) {
-    console.log(id, interview)
+    const appointment = { 
+      ...state.appointments[id],
+      interview: {...interview}
+    }
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    }
+    setState({...state, appointments})
+
+    console.log('This logs the function calls from the form grandchild, in order to access the state at the app level', id, interview)
   }
 
   useEffect(() => {

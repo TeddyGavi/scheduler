@@ -19,8 +19,12 @@ export default function Appointment(props) {
       interviewer
     }
 
-    props.bookInterview(props.id, interview)
-    transition(SHOW);
+    props.bookInterview(props.id, interview).then((res) => {
+      console.log(res)
+      // if (res === 204) {
+      // }
+      return transition(SHOW);
+    })
 
   }
 
@@ -29,9 +33,8 @@ export default function Appointment(props) {
       <Header time={props.time} />
        {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
        {mode === CREATE && <Form
-      //  student={"Matt"}
         onSave={save}
-       interviewer={props.interviewers}
+        interviewer={props.interviewers}
        />}
        {mode === SHOW && <Show 
        student={props.interview.student}

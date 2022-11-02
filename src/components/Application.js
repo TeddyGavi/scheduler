@@ -33,9 +33,14 @@ export default function Application(props) {
       ...state.appointments,
       [id]: appointment
     }
-    setState({...state, appointments})
 
-    console.log('This logs the function calls from the form grandchild, in order to access the state at the app level', id, interview)
+
+   return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview }).then((res) => {
+      const status = res.status; //possibly for future use?
+      setState(state => ({...state, appointments}))
+      return status;
+    })
+   
   }
 
   useEffect(() => {

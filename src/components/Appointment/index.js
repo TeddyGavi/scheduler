@@ -7,6 +7,7 @@ import useVisualMode from 'hooks/useVisualMode';
 import './styles.scss';
 import Status from './Status';
 import Confirm from './Confirm';
+import Error from './Error';
 
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
@@ -28,9 +29,7 @@ export default function Appointment(props) {
     }
     transition(SAVE)
     props.bookInterview(props.id, interview).then((res) => {
-      console.log(`response from SAVE`, res)
-      // if (res === 204) {
-      // }
+      // console.log(`response from SAVE`, res)
        transition(SHOW);
     }).catch((err) => {
       console.error({...err})
@@ -40,13 +39,13 @@ export default function Appointment(props) {
 
   function remove() {
     const interview = null;
-    transition(CONFIRM);
+    transition(CONFIRM, true);
     props.removeInterview(props.id, interview).then((res) => {
-      console.log(`response from DELETE`, res)
-       transition(EMPTY, true)
+      // console.log(`response from DELETE`, res)
+       transition(EMPTY)
     }).catch((err) => {
       console.error({...err})
-      transition(ERROR_DELETE);
+      transition(ERROR_DELETE, true);
     })
   }
 
@@ -86,7 +85,9 @@ export default function Appointment(props) {
        {/* simple status message updates to be displayed during async ops (this is a hardcoded delay in the API server) */}
        {mode === CONFIRM && <Status message={"Deleting"}/>}
        {mode === SAVE && <Status message={"Saving"}/>}
-        {/* Need to deal with errors that occur during saving and deleting */}
+        {/* dealing with errors that occur during saving and deleting */}
+       {mode === ERROR_DELETE && <Error  message={"Could not delete appointment"} onClose={() => {back()}}/>}
+      {mode === ERROR_SAVE && <Error  message={"Could not save appointment"} onClose={() => {back()}}/>}
       
     </article>
   )

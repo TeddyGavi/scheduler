@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
 export default function useApplicationData() {
   const [state, setState] = useState({
     day: "Monday",
@@ -12,33 +11,30 @@ export default function useApplicationData() {
 
   const setDay = day => setState(state => ({ ...state, day }))
 
-  function bookInterview(id, interview) {
+  async function bookInterview(id, interview) {
     const appointment = { ...state.appointments[id], interview: { ...interview } }
     const appointments = { ...state.appointments, [id]: appointment }
 
-
-    return axios.put(`http://localhost:8000/api/appointments/${id}`, { interview }).then((res) => {
-      // const status = res.status; //possibly for future use?
-      //  setState((state) => ({ ...state, appointments }))
-      //  console.log(appointments);
-      //update state, taking into account previous state?
-      return axios.get("http://localhost:8000/api/days")
-    }).then((res) => {
-      setState((state) => ({...state, appointments, days: res.data}))
-    })
+    try {
+      await axios.put(`http://localhost:8000/api/appointments/${id}`, { interview })
+      const res = await axios.get("http://localhost:8000/api/days")
+      setState((state) => ({ ...state, appointments, days: res.data }))
+    } catch (err) {
+      console.log({...err})
+    }
   }
 
-  function removeInterview(id, interview = null) {
+  async function removeInterview(id, interview = null) {
     const appointment = { ...state.appointments[id], interview }
     const appointments = { ...state.appointments, [id]: appointment }
 
-
-    return axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointment }).then((res) => {
-      setState(state => ({ ...state, appointments }))
-      return axios.get("http://localhost:8000/api/days")
-    }).then((res) => {
-      setState((state) => ({...state, appointments, days: res.data}))
-    })
+    try {
+      await axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointment })
+      const res = await axios.get("http://localhost:8000/api/days")
+      setState((state) => ({ ...state, appointments, days: res.data }))
+    } catch (err) {
+      console.error({...err})
+    }
   }
 
   useEffect(() => {

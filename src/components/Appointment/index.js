@@ -34,7 +34,7 @@ export default function Appointment(props) {
       await props.bookInterview(props.id, interview)
       transition(SHOW);
     } catch (err) {
-      console.error({...err})
+      console.error(err)
       transition(ERROR_SAVE, true)
     }
   }
@@ -43,12 +43,12 @@ export default function Appointment(props) {
     const interview = null;
 
     transition(CONFIRM, true);
-    
+
     try {
       await props.removeInterview(props.id, interview)
       transition(EMPTY)
     } catch (err) {
-      console.error({...err})
+      console.error(err)
       transition(ERROR_DELETE, true);
     }
   }
@@ -78,7 +78,7 @@ export default function Appointment(props) {
        interviewer={props.interview.interviewer.id}
        interviewers={props.interviewers}
        />}
-       {/* user clicks delete and we first show a confirmation asking */}
+       {/* user clicks delete and we first show a confirmation */}
        {mode === DELETE && 
        <Confirm
        message={"Are you sure you would like to delete this interview?"}

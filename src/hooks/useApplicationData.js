@@ -9,32 +9,34 @@ export default function useApplicationData() {
     interviewers: {},
   });
 
-  const setDay = day => setState(state => ({ ...state, day }))
+  const setDay = day => setState(state => ({ ...state, day })) //set day to selected day from DayList
+
+  /*
+  **handle errors in index.js**
+  The sequence of events here is:
+  1. update specific appointment with the new interview
+  2. update the entire appointment object with the newly created appointment and new interview
+  3. AWAIT send/remove new interview --> API
+  4. AWAIT the new days as they are updated automatically by the api
+  5. set the new state, using the previous state, with the new appointments and the new days array
+  */
 
   async function bookInterview(id, interview) {
-    const appointment = { ...state.appointments[id], interview: { ...interview } }
-    const appointments = { ...state.appointments, [id]: appointment }
+    const appointment = { ...state.appointments[id], interview: { ...interview } } 
+    const appointments = { ...state.appointments, [id]: appointment } 
 
-    try {
-      await axios.put(`http://localhost:8000/api/appointments/${id}`, { interview })
-      const res = await axios.get("http://localhost:8000/api/days")
-      setState((state) => ({ ...state, appointments, days: res.data }))
-    } catch (err) {
-      console.log({...err})
-    }
+    await axios.put(`http://localhost:8000/api/appointments/${id}`, { interview }) 
+    const res = await axios.get("http://localhost:8000/api/days") 
+    setState((state) => ({ ...state, appointments, days: res.data }))
   }
 
   async function removeInterview(id, interview = null) {
     const appointment = { ...state.appointments[id], interview }
     const appointments = { ...state.appointments, [id]: appointment }
 
-    try {
-      await axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointment })
-      const res = await axios.get("http://localhost:8000/api/days")
-      setState((state) => ({ ...state, appointments, days: res.data }))
-    } catch (err) {
-      console.error({...err})
-    }
+    await axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointment })
+    const res = await axios.get("http://localhost:8000/api/days")
+    setState((state) => ({ ...state, appointments, days: res.data })) 
   }
 
   useEffect(() => {
@@ -44,6 +46,8 @@ export default function useApplicationData() {
       axios.get("http://localhost:8000/api/interviewers")
     ]).then((all) => {
       setState(state => ({ ...state, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }))
+    }).catch((err) => {
+      console.log(err)
     });
   }, [])
 

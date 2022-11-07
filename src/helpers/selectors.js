@@ -17,8 +17,3 @@ export function getInterview(state, interview) {
 export function getInterviewersForDay(state, day) {
   return [...state.days].filter(x => x.name === day)[0]?.interviewers.map(x => state.interviewers[x]) || []
 }
-
-export function getDayNameAsKey(day) {
-  const daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-  return daysOfTheWeek.indexOf(day)
-}

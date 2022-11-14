@@ -15,12 +15,12 @@ export default function Application(props) {
     removeInterview,
   } = useApplicationData()
 
-
   const apptPerDay = getAppointmentsForDay(state, state.day)
   const interviewersPerDay = getInterviewersForDay(state, state.day)
 
   const appointment = apptPerDay.map(x => {
-    const interview = getInterview(state, x.interview)
+      // need to check if the interview is empty BEFORE we send to getInterview (only applies for deleting)
+    const interview = x.interview && Object.keys(x.interview).length === 0 ? null : getInterview(state, x.interview) 
     return (
       <Appointment
         key={x.id}

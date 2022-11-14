@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Empty from './Empty';
 import Show from './Show';
 import Header from './Header';
@@ -21,6 +21,15 @@ const ERROR_DELETE = "ERROR_DELETE"
 
 export default function Appointment(props) {
   const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY)
+
+useEffect(() => {
+  if (mode === EMPTY && props.interview) {
+    transition(SHOW)
+  } 
+  if (mode === SHOW && !props.interview) {
+    transition(EMPTY)
+  }
+}, [props.interview, mode, transition])
 
   async function save(name, interviewer) {
     const interview = {
@@ -64,7 +73,7 @@ export default function Appointment(props) {
         interviewers={props.interviewers}
        />}
        {/* after a put request */}
-       {mode === SHOW && <Show 
+       {mode === SHOW && props.interview && <Show 
        onDelete={() => {transition(DELETE)}}
        onEdit={() => {transition(EDIT)}}
        student={props.interview.student}

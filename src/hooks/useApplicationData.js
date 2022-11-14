@@ -2,12 +2,6 @@ import { useEffect, useReducer } from "react";
 import axios from "axios";
 
 export default function useApplicationData() {
-  /* const [state, setState] = useState({
-    day: "Monday",
-    days: [], //array of objects
-    appointments: {},
-    interviewers: {},
-  }); */
 
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
@@ -16,69 +10,68 @@ export default function useApplicationData() {
     interviewers: {},
   })
 
-  // const setDay = day => setState(state => ({ ...state, day })) //set day to selected day from DayList
-  const setDay = day => dispatch({type: "SET_DAY", value: day})
-
-  useEffect(() => {
-
+  const getData = () => {
     Promise.all([
       axios.get("http://localhost:8000/api/days"),
       axios.get("http://localhost:8000/api/appointments"),
       axios.get("http://localhost:8000/api/interviewers")
     ]).then((all) => {
       // setState(state => ({ ...state, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }))
-      dispatch({ type: "SET_APP_DATA", value: all})
+      dispatch({ type: "SET_APP_DATA", value: all })
     }).catch((err) => {
       console.log(err)
     });
+  }
+
+  // const setDay = day => setState(state => ({ ...state, day })) //set day to selected day from DayList
+
+  useEffect(() => {
+    getData()
 
     const socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
-    dispatch({ type: "SOCKET", socket })
+   
+    socket.onmessage = async (e) => {
+      let data = JSON.parse(e.data)
+      const res = await axios.get("http://localhost:8000/api/days")
+      if (data.type === "SET_INTERVIEW") dispatch({ type: "SOCKET", value: { data, days: res.data } })
+    }
+    //clean up function to close the socket connection, not sure if this is needed?
+    return () => {
+      socket.close()
+    }
 
-      // socket.send("ping")
-      socket.onmessage = (e) => {
-        const wssData = JSON.parse(e.data)
-        console.log(wssData, socket)
-       dispatch({ type: "MESSAGE", value: wssData})
-      }
-    
-
-    return () => {socket.close()}
   }, [])
+
+  const setDay = day => dispatch({ type: "SET_DAY", value: day })
 
   function reducer(state, action) {
     const type = {
-      SET_DAY: () => ({ ...state, day: action.value}),
+      SET_DAY: () => ({ ...state, day: action.value }),
       SET_APP_DATA: () => ({
-          ...state, 
-          days: action.value[0].data,
-          appointments: action.value[1].data,
-          interviewers: action.value[2].data
-        }),
-      SET_INTERVIEW: () => ({
-          ...state,
-          appointments: action.value.appointments,
-          days: action.value.days
-        }),
-      REMOVE_INTERVIEW: () => ({
-          ...state,
-          appointments: action.value.appointments,
-          days: action.value.days
-      }),
-      SOCKET: () => ({
         ...state,
-          socket: action.socket
+        days: action.value[0].data,
+        appointments: action.value[1].data,
+        interviewers: action.value[2].data
       }),
-      MESSAGE: () => {
-        console.log(action.value)
+      SET_INTERVIEW: () => ({
+        ...state,
+        appointments: action.value.appointments,
+      }),
+      REMOVE_INTERVIEW: () => ({
+        ...state,
+        appointments: action.value.appointments,
+      }),
+      SOCKET: () => {  
+        //new appointment and days come from the socket response, an async function
+        const wsApp = { ...state.appointments[action.value.data.id], interview: { ...action.value.data.interview } }
+        const updateAppt = { ...state.appointments, [action.value.data.id]: wsApp }
+        return { ...state, appointments: updateAppt, days: action.value.days}
       },
       default: () => {
         return new Error(`Tried to reduce state with unsupported type ${action.type}`).message
       }
     }
-    // console.log(type[action.type])
     return (type[action.type] || type.default)()
-    
   }
 
   /*
@@ -96,9 +89,12 @@ export default function useApplicationData() {
     const appointments = { ...state.appointments, [id]: appointment }
 
     await axios.put(`http://localhost:8000/api/appointments/${id}`, { interview })
-    const res = await axios.get("http://localhost:8000/api/days")
+    dispatch({ type: "SET_INTERVIEW", value: { appointments } })
+    
+    
+    // const res = await axios.get("http://localhost:8000/api/days")
     // setState((state) => ({ ...state, appointments, days: res.data }))
-    dispatch({ type: "SET_INTERVIEW", value: { appointments, days: res.data}})
+    // dispatch({ type: "SET_INTERVIEW", value: { appointments, days: res.data } })
   }
 
   async function removeInterview(id, interview = null) {
@@ -106,9 +102,12 @@ export default function useApplicationData() {
     const appointments = { ...state.appointments, [id]: appointment }
 
     await axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointments })
-    const res = await axios.get("http://localhost:8000/api/days")
+    dispatch({ type: "REMOVE_INTERVIEW", value: { appointments } })
+
+
+    // const res = await axios.get("http://localhost:8000/api/days")
     // setState((state) => ({ ...state, appointments, days: res.data }))
-    dispatch({ type: "REMOVE_INTERVIEW", value: { appointments, days: res.data}})
+    // dispatch({ type: "REMOVE_INTERVIEW", value: { appointments, days: res.data } })
   }
 
   return {

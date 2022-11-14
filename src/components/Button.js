@@ -4,22 +4,21 @@ import classNames from "classnames";
 import "./Button.scss";
 
 export default function Button(props) {
-   const buttonClass = classNames("button", {
-      "button--confirm": props.confirm,
-      "button--danger": props.danger
-    });
-  
+  const buttonClass = classNames("button", {
+    "button--confirm": props.confirm,
+    "button--danger": props.danger,
+  });
 
-   return (
-      <button
-         /* same thing as using spread {...props} */
-         disabled={props.disabled}
-         onClick={props.onClick}
-         /******************************************/
+  return (
+    <button
+      /* same thing as using spread {...props} */
+      disabled={props.disabled}
+      onClick={props.onClick}
+      /******************************************/
 
-         className={buttonClass}
-      >
-         {props.children}
-      </button>
-      )
+      className={buttonClass}
+    >
+      {props.children}
+    </button>
+  );
 }

@@ -4,24 +4,27 @@ import InterviewList from "components/InterviewList";
 
 export default function Form(props) {
   // console.log(props)
-  const [student, setStudent] = useState(props.student || "")
-  const [interviewer, setInterviewer] = useState(props.interviewer || null)
+  const [student, setStudent] = useState(props.student || "");
+  const [interviewer, setInterviewer] = useState(props.interviewer || null);
 
   const reset = () => {
-    setStudent("")
-    setInterviewer(null)
-  }
+    setStudent("");
+    setInterviewer(null);
+  };
 
   const cancel = () => {
     props.onCancel();
-  }
-
-
+  };
 
   return (
     <main className="appointment__card appointment__card--create">
       <section className="appointment__card-left">
-        <form autoComplete="off" onSubmit={(e) => {e.preventDefault()}}>
+        <form
+          autoComplete="off"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <input
             value={student}
             onChange={(e) => setStudent(e.target.value)}
@@ -33,18 +36,27 @@ export default function Form(props) {
           />
         </form>
         <InterviewList
-        value={interviewer}
-        interviewers={props.interviewers}
-        onChange={setInterviewer}
+          value={interviewer}
+          interviewers={props.interviewers}
+          onChange={setInterviewer}
         />
       </section>
       <section className="appointment__card-right">
         <section className="appointment__actions">
-          <Button danger onClick={() => {cancel(); reset();}}>Cancel</Button>
-          <Button confirm onClick={() => props.onSave(student, interviewer)}>Save</Button>
+          <Button
+            danger
+            onClick={() => {
+              cancel();
+              reset();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button confirm onClick={() => props.onSave(student, interviewer)}>
+            Save
+          </Button>
         </section>
       </section>
     </main>
-
-  )
+  );
 }

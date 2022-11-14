@@ -23,8 +23,6 @@ export default function useApplicationData() {
     });
   }
 
-  // const setDay = day => setState(state => ({ ...state, day })) //set day to selected day from DayList
-
   useEffect(() => {
     getData()
 
@@ -53,14 +51,14 @@ export default function useApplicationData() {
         appointments: action.value[1].data,
         interviewers: action.value[2].data
       }),
-      SET_INTERVIEW: () => ({
+   /*    SET_INTERVIEW: () => ({
         ...state,
         appointments: action.value.appointments,
       }),
       REMOVE_INTERVIEW: () => ({
         ...state,
         appointments: action.value.appointments,
-      }),
+      }), */
       SOCKET: () => {  
         //new appointment and days come from the socket response, an async function
         const wsApp = { ...state.appointments[action.value.data.id], interview: { ...action.value.data.interview } }
@@ -82,19 +80,19 @@ export default function useApplicationData() {
   3. AWAIT send/remove new interview --> API
   4. AWAIT the new days as they are updated automatically by the api
   5. set the new state, using the previous state, with the new appointments and the new days array
+
+  ** UPDATED on Nov 14th/2022 **
+  Essentially the same here, EXCEPT with websockets we update the days and appointments independently by awaiting the response from the websocket 
+
+  ** I am sure I could refactor this to avoid the repeated code, however, there still needs to be a set and remove interview function but possibly not a separate dispatch? the dispatch might be able to be taken care of solely by the  webocket 
   */
 
   async function bookInterview(id, interview) {
-    const appointment = { ...state.appointments[id], interview: { ...interview } }
-    const appointments = { ...state.appointments, [id]: appointment }
+    // const appointment = { ...state.appointments[id], interview: { ...interview } }
+    // const appointments = { ...state.appointments, [id]: appointment }
 
     await axios.put(`http://localhost:8000/api/appointments/${id}`, { interview })
-    dispatch({ type: "SET_INTERVIEW", value: { appointments } })
-    
-    
-    // const res = await axios.get("http://localhost:8000/api/days")
-    // setState((state) => ({ ...state, appointments, days: res.data }))
-    // dispatch({ type: "SET_INTERVIEW", value: { appointments, days: res.data } })
+    // dispatch({ type: "SET_INTERVIEW", value: { appointments } })
   }
 
   async function removeInterview(id, interview = null) {
@@ -102,12 +100,7 @@ export default function useApplicationData() {
     const appointments = { ...state.appointments, [id]: appointment }
 
     await axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointments })
-    dispatch({ type: "REMOVE_INTERVIEW", value: { appointments } })
-
-
-    // const res = await axios.get("http://localhost:8000/api/days")
-    // setState((state) => ({ ...state, appointments, days: res.data }))
-    // dispatch({ type: "REMOVE_INTERVIEW", value: { appointments, days: res.data } })
+    // dispatch({ type: "REMOVE_INTERVIEW", value: { appointments } })
   }
 
   return {

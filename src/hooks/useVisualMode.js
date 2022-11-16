@@ -5,12 +5,6 @@ export default function useVisualMode(initial) {
   const [history, setHistory] = useState([initial]);
 
   const transition = (newMode, replace = false) => {
-    /*  
-    default parameter action is to copy the prev state and add the newMode to the end of the history array
-    setHistory((prev) => [...prev, newMode]); 
-    else we need to copy the previous history and replace the last element with the new mode 
-    setHistory((prev) => ([...prev.slice(0, -1), newMode]))   
-  */
     !replace
       ? setHistory((prev) => [...prev, newMode])
       : setHistory((prev) => [...prev.slice(0, -1), newMode]);

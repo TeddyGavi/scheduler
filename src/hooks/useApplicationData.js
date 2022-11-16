@@ -1,46 +1,63 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
+/* 
+
+App loads
+
+- useEffect runs to dispatching reducer for SET_APP_DATA
+  - User can click on different days and view the available appointments remaining
+- User can book or delete an appointment, which will change the data on the server
+  - webSocket (already configured on the server) here handles all the State updates
+    **
+    IMPORTANT note here is that the server auto updates days remaining, so we can
+    fetch and update "days" each time a socket receives a onmessage event
+    
+    This does appear to cause a seem to cause a rerender on the second browser window? 
+      Need to investigate further
+    **  
+
+*/
 
 export default function useApplicationData() {
-
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [], //array of objects
     appointments: {},
     interviewers: {},
-  })
+  });
 
   const getData = () => {
     Promise.all([
       axios.get("http://localhost:8000/api/days"),
       axios.get("http://localhost:8000/api/appointments"),
-      axios.get("http://localhost:8000/api/interviewers")
-    ]).then((all) => {
-      // setState(state => ({ ...state, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }))
-      dispatch({ type: "SET_APP_DATA", value: all })
-    }).catch((err) => {
-      console.log(err)
-    });
-  }
+      axios.get("http://localhost:8000/api/interviewers"),
+    ])
+      .then((all) => {
+        dispatch({ type: "SET_APP_DATA", value: all });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   useEffect(() => {
-    getData()
+    getData();
 
-    const socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL)
-   
-    socket.onmessage = async (e) => {
-      let data = JSON.parse(e.data)
-      const res = await axios.get("http://localhost:8000/api/days")
-      if (data.type === "SET_INTERVIEW") dispatch({ type: "SOCKET", value: { data, days: res.data } })
-    }
-    //clean up function to close the socket connection, not sure if this is needed?
+    const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
+    ws.onmessage = async (e) => {
+      let data = JSON.parse(e.data);
+      const res = await axios.get("http://localhost:8000/api/days");
+      if (data.type === "SET_INTERVIEW")
+        dispatch({ type: "SOCKET", value: { data, days: res.data } });
+    };
+    //clean up function to close the socket connection
     return () => {
-      socket.close()
-    }
+      ws.close();
+    };
+  }, []);
 
-  }, [])
-
-  const setDay = day => dispatch({ type: "SET_DAY", value: day })
+  const setDay = (day) => dispatch({ type: "SET_DAY", value: day });
 
   function reducer(state, action) {
     const type = {
@@ -49,58 +66,41 @@ export default function useApplicationData() {
         ...state,
         days: action.value[0].data,
         appointments: action.value[1].data,
-        interviewers: action.value[2].data
+        interviewers: action.value[2].data,
       }),
-   /*    SET_INTERVIEW: () => ({
-        ...state,
-        appointments: action.value.appointments,
-      }),
-      REMOVE_INTERVIEW: () => ({
-        ...state,
-        appointments: action.value.appointments,
-      }), */
-      SOCKET: () => {  
+      SOCKET: () => {
         //new appointment and days come from the socket response, an async function
-        const wsApp = { ...state.appointments[action.value.data.id], interview: { ...action.value.data.interview } }
-        const updateAppt = { ...state.appointments, [action.value.data.id]: wsApp }
-        return { ...state, appointments: updateAppt, days: action.value.days}
+        const wsAppointment = {
+          ...state.appointments[action.value.data.id],
+          interview: { ...action.value.data.interview },
+        };
+        const wsStateUpdate = {
+          ...state.appointments,
+          [action.value.data.id]: wsAppointment,
+        };
+        return { ...state, appointments: wsStateUpdate, days: action.value.days };
       },
       default: () => {
-        return new Error(`Tried to reduce state with unsupported type ${action.type}`).message
-      }
-    }
-    return (type[action.type] || type.default)()
+        return new Error(
+          `Tried to reduce state with unsupported type ${action.type}`
+        ).message;
+      },
+    };
+    return (type[action.type] || type.default)();
   }
 
-  /*
-  **handle errors in index.js**
-  The sequence of events here is:
-  1. update specific appointment with the new interview
-  2. update the entire appointment object with the newly created appointment and new interview
-  3. AWAIT send/remove new interview --> API
-  4. AWAIT the new days as they are updated automatically by the api
-  5. set the new state, using the previous state, with the new appointments and the new days array
-
-  ** UPDATED on Nov 14th/2022 **
-  Essentially the same here, EXCEPT with websockets we update the days and appointments independently by awaiting the response from the websocket 
-
-  ** I am sure I could refactor this to avoid the repeated code, however, there still needs to be a set and remove interview function but possibly not a separate dispatch? the dispatch might be able to be taken care of solely by the  webocket 
-  */
-
   async function bookInterview(id, interview) {
-    // const appointment = { ...state.appointments[id], interview: { ...interview } }
-    // const appointments = { ...state.appointments, [id]: appointment }
+    if (interview.student === "" || !interview.interviewer) throw new Error();
 
-    await axios.put(`http://localhost:8000/api/appointments/${id}`, { interview })
-    // dispatch({ type: "SET_INTERVIEW", value: { appointments } })
+    await axios.put(`http://localhost:8000/api/appointments/${id}`, {
+      interview,
+    });
   }
 
   async function removeInterview(id, interview = null) {
-    const appointment = { ...state.appointments[id], interview }
-    const appointments = { ...state.appointments, [id]: appointment }
-
-    await axios.delete(`http://localhost:8000/api/appointments/${id}`, { appointments })
-    // dispatch({ type: "REMOVE_INTERVIEW", value: { appointments } })
+    await axios.delete(`http://localhost:8000/api/appointments/${id}`, {
+      interview,
+    });
   }
 
   return {
@@ -108,15 +108,8 @@ export default function useApplicationData() {
     setDay,
     bookInterview,
     removeInterview,
-  }
+  };
 }
-
-
-
-
-
-
-
 
 /* 
 

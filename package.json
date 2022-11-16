@@ -12,8 +12,10 @@
     "react-dom": "^16.9.0",
     "react-scripts": "3.4.4"
   },
-    "resolutions": { "react-error-overlay": "6.0.9" },
-    "scripts": {
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
+  },
+  "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -45,9 +47,10 @@
     "@testing-library/react": "^8.0.4",
     "@testing-library/react-hooks": "^1.1.0",
     "babel-loader": "^8.0.5",
+    "prop-types": "^15.8.1",
+    "react-error-overlay": "6.0.9",
     "react-test-renderer": "^16.9.0",
-    "sass": "^1.53.0",
-    "react-error-overlay": "6.0.9"
+    "sass": "^1.53.0"
   },
   "jest": {
     "watchPathIgnorePatterns": [

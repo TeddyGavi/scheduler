@@ -139,7 +139,6 @@ test("getInterview returns an object with the interviewer data", () => {
 
 test("getInterview returns null if no interview is booked", () => {
   const result = getInterview(state, state.appointments["2"].interview);
-  console.log(result)
 
   expect(result).toBeNull();
 });

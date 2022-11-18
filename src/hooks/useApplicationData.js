@@ -41,12 +41,13 @@ export default function useApplicationData() {
         console.log(err);
       });
   };
-
+  
+  
   useEffect(() => {
     getData();
-
+    
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
-
+    
     ws.onmessage = async (e) => {
       let data = JSON.parse(e.data);
       const res = await axios.get("http://localhost:8000/api/days");
@@ -58,7 +59,7 @@ export default function useApplicationData() {
       ws.close();
     };
   }, []);
-
+  
   const setDay = (day) => dispatch({ type: "SET_DAY", value: day });
 
   async function bookInterview(id, interview) {

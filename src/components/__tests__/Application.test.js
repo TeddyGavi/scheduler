@@ -1,3 +1,12 @@
+/* 
+- Writing these test, especially in isolation ("poking holes in reality") using mock data doesn't accurately reflect the application usage using websockets.
+
+- furthermore the API that was provided to us automatically updates  the days remaining, so in order to update the days remaining all we need to do is a simple get request for the days AFTER a put or delete has been done, then we update the state based on the returned information, in the websocket case this information is all coming via the returned message in the useEffect.
+
+Therefore multiple tests we are writing in Module 8 Week 20 will not be functional with my current code, as specially mentioned in Week 20 debugging tests
+
+*/
+
 import React from "react";
 // import axios from "__mocks__/axios";
 
@@ -8,7 +17,10 @@ import {
   fireEvent,
   prettyDOM,
   getByText,
-  getAllByTestId
+  getAllByTestId,
+  getByAltText,
+  getByPlaceholderText,
+  queryByText,
 } from "@testing-library/react";
 
 import Application from "components/Application";
@@ -31,13 +43,27 @@ describe("Application", () => {
   });
 
   it("loads data, books an interview and reduces the spots remaining for the first day by 1", async () => {
-    const { container } = render(<Application />);
+     const { container, debug } = render(<Application />);
 
     await waitForElement(() => getByText(container, "Archie Cohen"));
-  
-    console.log(prettyDOM(container));
-    const appointments = getAllByTestId(container, "appointment");
-    console.log(prettyDOM(appointments[0]));
 
+    // console.log(prettyDOM(container));
+    const appointment = getAllByTestId(container, "appointment")[0];
+    // console.log(prettyDOM(appointment));
+    fireEvent.click(getByAltText(appointment, "Add"));
+    fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
+      target: { value: "Lydia Miller-Jones" },
+    });
+    fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
+    fireEvent.click(getByText(appointment, "Save"));
+    debug(container);
+    expect(getByText(appointment, "Saving")).toBeInTheDocument();
+    await waitForElement(() => {
+      getByText(appointment, "Lydia Miller-Jones" )
+    })
+
+    const day = getAllByTestId(container, "day").find(x => queryByText(x, "Monday"))
+    console.log(prettyDOM(day));
+    expect(getByText(day, "No spots remaining")).toBeInTheDocument();
   });
 });

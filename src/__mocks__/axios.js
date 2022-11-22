@@ -81,5 +81,21 @@ export default {
         data: fixtures.interviewers
       })
     }
+  }),
+  put: jest.fn(url => {
+    if (url === "http://localhost:8000/api/appointments") {
+      return Promise.resolve ({
+        status: 204,
+        statusText: "OK",
+      })
+    }
+  }),
+   delete: jest.fn(url => {
+    if (url === "http://localhost:8000/api/appointments") {
+      return Promise.resolve ({
+        status: 204,
+        statusText: "OK",
+      })
+    }
   })
 }

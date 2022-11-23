@@ -45,7 +45,6 @@ export default function Appointment(props) {
       await props.bookInterview(props.id, interview);
       transition(SHOW);
     } catch (err) {
-      console.error(err);
       transition(ERROR_SAVE, true);
     }
   }
@@ -59,7 +58,6 @@ export default function Appointment(props) {
       await props.removeInterview(props.id, interview);
       transition(EMPTY);
     } catch (err) {
-      console.error(err);
       transition(ERROR_DELETE, true);
     }
   }

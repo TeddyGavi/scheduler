@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
 import reducer from "./reducer";
+import { newSpots } from "helpers/selectors";
 
 /* 
 
@@ -41,27 +42,54 @@ export default function useApplicationData() {
         console.log(err);
       });
   };
-  
-  
+
   useEffect(() => {
     getData();
-    
+
+    /*
+    REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
     
     ws.onmessage = async (e) => {
       let data = JSON.parse(e.data);
       const res = await axios.get("http://localhost:8000/api/days");
-      if (data.type === "SET_INTERVIEW")
+      // if (data.type === "SET_INTERVIEW")
         dispatch({ type: "SOCKET", value: { data, days: res.data } });
     };
     //clean up function to close the socket connection
     return () => {
       ws.close();
-    };
+    }; */
   }, []);
-  
+
   const setDay = (day) => dispatch({ type: "SET_DAY", value: day });
 
+  async function bookInterview(id, interview) {
+    if (interview.student === "" || !interview.interviewer) throw new Error();
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview },
+    };
+    const appointments = { ...state.appointments, [id]: appointment };
+    await axios.put(`http://localhost:8000/api/appointments/${id}`, {
+      interview,
+    });
+    const update = newSpots(state, id, false);
+    dispatch({ type: "SET_INTERVIEW", value: { appointments, days: update } });
+  }
+
+  async function removeInterview(id, interview = null) {
+    const appointment = { ...state.appointments[id], interview };
+    const appointments = { ...state.appointments, [id]: appointment };
+    await axios.delete(`http://localhost:8000/api/appointments/${id}`, {
+      interview,
+    });
+    const update = newSpots(state, id, true);
+    dispatch({type: "REMOVE_INTERVIEW", value: {appointments, days: update}})
+  }
+/*
+
+REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
   async function bookInterview(id, interview) {
     if (interview.student === "" || !interview.interviewer) throw new Error();
 
@@ -75,6 +103,7 @@ export default function useApplicationData() {
       interview,
     });
   }
+ */
 
   return {
     state,

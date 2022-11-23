@@ -19,6 +19,16 @@ export default function reducer(state, action) {
       };
       return { ...state, appointments: wsStateUpdate, days: action.value.days };
     },
+    SET_INTERVIEW: () => ({
+      ...state,
+      appointments: action.value.appointments,
+      days: action.value.days,
+    }),
+    REMOVE_INTERVIEW: () => ({
+      ...state,
+      appointments: action.value.appointments,
+      days: action.value.days,
+    }),
     default: () => {
       return new Error(
         `Tried to reduce state with unsupported type ${action.type}`

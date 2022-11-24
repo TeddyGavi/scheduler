@@ -139,9 +139,72 @@ describe("Application", () => {
     expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
   });
 
-  it("shows the save error when failing to save an appointment", () => {
+  it("shows the save error when failing to save an appointment", async () => {
     axios.put.mockRejectedValueOnce();
+    const { container } = render(<Application />);
+    // wait for load
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+    // get appointment
+    const appointment = getAllByTestId(container, "appointment")[0];
+    // click the "add appointment button"
+    fireEvent.click(getByAltText(appointment, "Add"));
+    // change the name of the text input
+    fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
+      target: { value: "Lydia Miller-Jones" },
+    });
+    // chose an interviewer
+    fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
+    fireEvent.click(getByText(appointment, "Save"));
+    // wait for the mock to be rejected make sure the error message is displayed
+    await waitForElement(() => getByText(container, "Error"));
+    expect(
+      getByText(appointment, "Could not save appointment")
+    ).toBeInTheDocument();
+    // close the error
+    fireEvent.click(getByAltText(appointment, "Close"));
+    // the form is shown again
+    await waitForElement(() => getAllByTestId(container, "student-name-input"));
+    // click cancel
+    fireEvent.click(getByText(appointment, "Cancel"));
+    // wait for the original container to load
+    await waitForElement(() => getByText(container, "Archie Cohen"));
 
+    expect(getByText(container, "Archie Cohen")).toBeInTheDocument();
+    // make sure the days are the same, ie the spots haven't changed from the mock data
+    const day = getAllByTestId(container, "day").find((day) =>
+      queryByText(day, "Monday")
+    );
+    expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
   });
 
+  it("Shows the delete error when failing to delete an appointment", async () => {
+    const { container } = render(<Application />);
+    axios.delete.mockRejectedValueOnce();
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+
+    const appointment = getAllByTestId(container, "appointment").find((x) =>
+      queryByText(x, "Archie Cohen")
+    );
+    fireEvent.click(getByAltText(appointment, "Delete"));
+    expect(
+      getByText(
+        appointment,
+        "Are you sure you would like to delete this interview?"
+      )
+    ).toBeInTheDocument();
+    fireEvent.click(queryByText(appointment, "Confirm"));
+    expect(getByText(appointment, "Deleting")).toBeInTheDocument();
+    await waitForElement(() => getByText(container, "Error"));
+    expect(getByText(appointment, "Could not delete appointment")).toBeInTheDocument();
+    fireEvent.click(getByAltText(container, "Close"))
+    
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+
+    expect(getByText(container, "Archie Cohen")).toBeInTheDocument();
+    // make sure the days are the same, ie the spots haven't changed from the mock data
+    const day = getAllByTestId(container, "day").find((day) =>
+      queryByText(day, "Monday")
+    );
+    expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
+  });
 });

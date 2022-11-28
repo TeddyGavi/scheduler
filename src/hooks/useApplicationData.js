@@ -31,9 +31,9 @@ export default function useApplicationData() {
 
   const getData = () => {
     Promise.all([
-      axios.get("http://localhost:8000/api/days"),
-      axios.get("http://localhost:8000/api/appointments"),
-      axios.get("http://localhost:8000/api/interviewers"),
+      axios.get("/api/days"),
+      axios.get("/api/appointments"),
+      axios.get("/api/interviewers"),
     ])
       .then((all) => {
         dispatch({ type: "SET_APP_DATA", value: all });
@@ -52,7 +52,7 @@ export default function useApplicationData() {
     
     ws.onmessage = async (e) => {
       let data = JSON.parse(e.data);
-      const res = await axios.get("http://localhost:8000/api/days");
+      const res = await axios.get("/api/days");
       // if (data.type === "SET_INTERVIEW")
         dispatch({ type: "SOCKET", value: { data, days: res.data } });
     };
@@ -71,7 +71,7 @@ export default function useApplicationData() {
       interview: { ...interview },
     };
     const appointments = { ...state.appointments, [id]: appointment };
-    await axios.put(`http://localhost:8000/api/appointments/${id}`, {
+    await axios.put(`/api/appointments/${id}`, {
       interview,
     });
     const update = newSpots(state, id, false);
@@ -81,7 +81,7 @@ export default function useApplicationData() {
   async function removeInterview(id, interview = null) {
     const appointment = { ...state.appointments[id], interview };
     const appointments = { ...state.appointments, [id]: appointment };
-    await axios.delete(`http://localhost:8000/api/appointments/${id}`, {
+    await axios.delete(`/api/appointments/${id}`, {
       interview,
     });
     const update = newSpots(state, id, true);
@@ -93,13 +93,13 @@ REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
   async function bookInterview(id, interview) {
     if (interview.student === "" || !interview.interviewer) throw new Error();
 
-    await axios.put(`http://localhost:8000/api/appointments/${id}`, {
+    await axios.put(`/api/appointments/${id}`, {
       interview,
     });
   }
 
   async function removeInterview(id, interview = null) {
-    await axios.delete(`http://localhost:8000/api/appointments/${id}`, {
+    await axios.delete(`/api/appointments/${id}`, {
       interview,
     });
   }

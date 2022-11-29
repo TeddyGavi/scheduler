@@ -7,18 +7,6 @@ export default function reducer(state, action) {
       appointments: action.value[1].data,
       interviewers: action.value[2].data,
     }),
-    SOCKET: () => {
-      //new appointment and days come from the socket response, an async function
-      const wsAppointment = {
-        ...state.appointments[action.value.data.id],
-        interview: { ...action.value.data.interview },
-      };
-      const wsStateUpdate = {
-        ...state.appointments,
-        [action.value.data.id]: wsAppointment,
-      };
-      return { ...state, appointments: wsStateUpdate, days: action.value.days };
-    },
     SET_INTERVIEW: () => {
       const appointment = {
         ...state.appointments[action.value.id],

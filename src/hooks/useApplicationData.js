@@ -27,18 +27,7 @@ export default function useApplicationData() {
 
   useEffect(() => {
     getData();
-    // REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
-    const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
-
-    ws.onmessage = async (e) => {
-      let data = JSON.parse(e.data);
-      const res = await axios.get("/api/days");
-      dispatch({ type: "SOCKET", value: { data, days: res.data } });
-    };
-    //clean up function to close the socket connection
-    return () => {
-      ws.close();
-    };
+    // MOVED WEBSOCKETS INTO OWN BRANCH IN ORDER FOR "INTEGRATION" TESTS TO PASS
   }, []);
 
   const setDay = (day) => dispatch({ type: "SET_DAY", value: day });
@@ -63,21 +52,6 @@ export default function useApplicationData() {
       value: { id, interview, days: update },
     });
   }
-  /* 
-  // REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
-  async function bookInterview(id, interview) {
-    if (interview.student === "" || !interview.interviewer) throw new Error();
-
-    await axios.put(`/api/appointments/${id}`, {
-      interview,
-    });
-  }
-
-  async function removeInterview(id, interview = null) {
-    await axios.delete(`/api/appointments/${id}`, {
-      interview,
-    });
-  } */
 
   return {
     state,

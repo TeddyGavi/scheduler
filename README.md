@@ -41,25 +41,25 @@ npm run storybook
 
 ### Learning Outcomes
 
-- [ x ] StoryBook
+- [x] StoryBook
   - Testing components in isolation
   - Pattern recognition and implementation
-- [ x ] React
+- [x] React
   - Controlled components
   - useState
   - useEffect --axios, and WebSockets
   - Custom Hooks
   - Immutable Objects and update patterns
   - Parent/child component building
-- [ x ] JSX
+- [x] JSX
   - Component building
   - Understanding Syntax Patterns
   - Passing Props
   - Using [classNames](https://github.com/JedWatson/classnames) for conditional rendering
-- [ x ] Reducer
+- [x] Reducer
   - Implement Reducer patterns
   - The difference between Switch and Objects in Reducers
-- [ x ] WebSockets
+- [x] WebSockets
   - Two browser tabs open will update automatically if one user makes a change, see the view for more
 
 ### Future Goals

@@ -28,7 +28,7 @@ export function getInterviewersForDay(state, day) {
 }
 
 /*  The following functions are my original process for calculating the spots remaining per day, this is clearly not needed and I am only including it in order to make "integration" testing easier
-*/
+ */
 export function getDayNameAsKey(day) {
   const daysOfTheWeek = [
     "Monday",

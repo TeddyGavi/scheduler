@@ -9,16 +9,13 @@ import React from "react";
 */
 import {
   cleanup,
-  getByPlaceholderText,
   render,
   fireEvent,
-  getByText,
 } from "@testing-library/react";
 
 /*
   We import the component that we are testing
 */
-import Application from "components/Application";
 import Form from "components/Appointment/Form";
 
 /*
@@ -81,7 +78,7 @@ describe("Form", () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
-  xit("calls onSave function when the name is defined", () => {
+  it("calls onSave function when the name is defined", () => {
     /* 1. Create the mock onSave function */
     const onSave = jest.fn();
 
@@ -104,7 +101,7 @@ describe("Form", () => {
     expect(onSave).toHaveBeenCalledWith("Lydia Miller-Jones", 1);
   });
 
-  xit("submits the name entered by the user", () => {
+  it("submits the name entered by the user", () => {
     const onSave = jest.fn();
     const { getByText, getByPlaceholderText } = render(
       <Form interviewers={interviewers} onSave={onSave} interviewer={1} />

@@ -51,14 +51,13 @@ export const newSpots = ({ ...args }, id, action = null) => {
     return x;
   }); */
 
-  const currDayName = Object.values(args).map((x) => x)[0]; //this will always be the first element of the new array given the first element of state is the day key
-  const dayIndex = getDayNameAsKey(currDayName); //turning the string into the related indexed value
-  const currDayObj = args.days.find((x) => x.name === currDayName);
+  const dayIndex = getDayNameAsKey(args.day); //turning the string into the related indexed value
+  const currDayObj = args.days.find((x) => x.name === args.day);
   const interviewState = args.appointments[id].interview;
 
   let spots = args.days.map((obj) => obj.spots)[dayIndex];
   if (action === true) {
-    //deleting interview status doesn't matter
+    //When deleting, the interview status doesn't matter
     spots += 1;
   } else if (action === false && interviewState === null) {
     spots -= 1;

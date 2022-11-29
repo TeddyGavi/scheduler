@@ -14,7 +14,6 @@ export default function useVisualMode(initial) {
   const back = () => {
     if (history.length === 1) return; //we can't have a history without at least one element
     setHistory((prev) => [...prev.slice(0, history.length - 1)]); //need to reset the history array as the prev array without the last element
-    // setMode(history[history.length - 2]) //set the mode to the previous entered, is there a better way?
     setMode(history.at(-2));
   };
 

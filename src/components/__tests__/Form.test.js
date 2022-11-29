@@ -1,19 +1,6 @@
 import React from "react";
-
-/*
-  We import our helper functions from the react-testing-library
-  The render function allows us to render Components
-*/
 import { cleanup, render, fireEvent } from "@testing-library/react";
-
-/*
-  We import the component that we are testing
-*/
 import Form from "components/Appointment/Form";
-
-/*
-  A test that renders a React Component
-*/
 
 afterEach(cleanup);
 
@@ -42,7 +29,6 @@ describe("Form", () => {
   });
 
   it("validates that the student name is not blank", () => {
-    /* 1. validation is shown */
     const onSave = jest.fn();
     const { getByText } = render(
       <Form interviewers={interviewers} onSave={onSave} student="" />
@@ -50,12 +36,10 @@ describe("Form", () => {
     fireEvent.click(getByText("Save"));
     expect(getByText(/student name cannot be blank/i)).toBeInTheDocument();
 
-    /* 2. onSave is not called */
     expect(onSave).not.toHaveBeenCalled();
   });
 
   it("validates that the interviewer cannot be null", () => {
-    /* 3. validation is shown */
     const onSave = jest.fn();
     const { getByText } = render(
       <Form
@@ -67,15 +51,12 @@ describe("Form", () => {
     fireEvent.click(getByText("Save"));
     expect(getByText(/please select an interviewer/i)).toBeInTheDocument();
 
-    /* 4. onSave is not called */
     expect(onSave).not.toHaveBeenCalled();
   });
 
   it("calls onSave function when the name is defined", () => {
-    /* 1. Create the mock onSave function */
     const onSave = jest.fn();
 
-    /* 2. Render the Form with interviewers, student name and the onSave mock function passed as an onSave prop */
     const { getByText, queryByText } = render(
       <Form
         interviewers={interviewers}
@@ -85,7 +66,6 @@ describe("Form", () => {
       />
     );
 
-    /* 3. Click the save button */
     fireEvent.click(getByText("Save"));
 
     expect(queryByText(/student name cannot be blank/i)).toBeNull();

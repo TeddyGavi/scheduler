@@ -11,11 +11,8 @@ export default function Button(props) {
 
   return (
     <button
-      /* same thing as using spread {...props} */
       disabled={props.disabled}
       onClick={props.onClick}
-      /******************************************/
-
       className={buttonClass}
     >
       {props.children}

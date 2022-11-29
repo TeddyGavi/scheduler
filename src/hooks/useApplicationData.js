@@ -66,28 +66,27 @@ export default function useApplicationData() {
 
   async function bookInterview(id, interview) {
     if (interview.student === "" || !interview.interviewer) throw new Error();
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview },
-    };
-    const appointments = { ...state.appointments, [id]: appointment };
+
     await axios.put(`/api/appointments/${id}`, {
       interview,
     });
     const update = newSpots(state, id, false);
-    dispatch({ type: "SET_INTERVIEW", value: { appointments, days: update } });
+    console.log(update);
+    dispatch({ type: "SET_INTERVIEW", value: { id, interview, days: update } });
   }
 
   async function removeInterview(id, interview = null) {
-    const appointment = { ...state.appointments[id], interview };
-    const appointments = { ...state.appointments, [id]: appointment };
     await axios.delete(`/api/appointments/${id}`, {
       interview,
     });
     const update = newSpots(state, id, true);
-    dispatch({type: "REMOVE_INTERVIEW", value: {appointments, days: update}})
+    console.log(update);
+    dispatch({
+      type: "SET_INTERVIEW",
+      value: { id, interview, days: update },
+    });
   }
-/*
+  /*
 
 REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
   async function bookInterview(id, interview) {
@@ -112,28 +111,3 @@ REMOVED IN ORDER TO MAKE "INTEGRATION" TESTS PASS
     removeInterview,
   };
 }
-
-/* 
-
-TESTING async await inside useEffect, I believe its simpler to use Promise.all here, as there is no need for any "awaiting", we are simply getting and display data only once
-
-
-    const fetchData = async() => {
-      const days =  axios.get("http://localhost:8000/api/days")
-      const appointments =  axios.get("http://localhost:8000/api/appointments")
-      const interviewers =  axios.get("http://localhost:8000/api/interviewers")
-
-      const data = await Promise.all([days, appointments, interviewers])
-      return data;
-    }
-
-    fetchData()
-      .then((data) => { setState(state => 
-      ({...state, days: data[0].data, appointments: data[1].data, interviewers: data[2].data })) 
-    })
-    .catch((err) => {
-      console.log(err)
-    }) 
-
-
- */

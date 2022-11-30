@@ -13,9 +13,9 @@ The template can be found here: [LHL Scheduler](https://github.com/lighthouse-la
 
   - Follow the instructions listed here: [LHL Scheduler-API](https://github.com/lighthouse-labs/scheduler-api)
 
-- \*\*I have two branches:
-  > Main, the main project
-  > web_socket: showcasing my solution to the websocket stretch (refactored to separate file to allow for JEST test suite to pass)
+- **I have two branches:**
+  - _main_, the main project
+  - _web_socket:_ showcasing my solution to the websocket stretch (refactored to separate file to allow for JEST test suite to pass)
 
 ### Setup
 
@@ -90,6 +90,5 @@ Test Coverage
 - @testing-library/react-hooks
 - react-test-renderer
 - classNames
-- Dev
-  > StoryBook
-  > Cypress
+- Testing Dependencies
+  > StoryBook, Cypress

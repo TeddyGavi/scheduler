@@ -1,3 +1,23 @@
+/* 
+Given that the onmessage is a async 
+AND the API automatically determines the spots remaining on a GET days request
+  (see the API)
+the BEST solution I found to solve both these issues is:
+1. make a PUT/DELETE to the API when an interview is Edited or Deleted
+2. AWAIT a get request for days AFTER
+3. Use the data returned from the socket and the GET request to Update state
+
+This has the advantage of a SINGLE source of truth, ie the API is always responsible for the data
+- the front end is simply displaying that data, with no chance of manipulation or 
+- IF something does go wrong how do we know if is the front-end or Back-end?
+
+If there is another way I would like to know, 
+currently, to fulfill the requirements of compass I am using a front-end function 
+to manipulate the data and return a state update after holding the new state 
+(see reducer.js and helpers/newSpots)
+
+*/
+
 import { useEffect, useReducer } from "react";
 import axios from "axios";
 import reducer from "./reducer";

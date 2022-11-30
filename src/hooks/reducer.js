@@ -1,5 +1,12 @@
 import { spotsRefactored } from "helpers/newSpots";
+/* 
 
+- This reducer now takes any socket response and sets the new state in a variable, 
+- using that newState variable we update the spots remaining by counting how many interviews are NULL, 
+- a final state update is done afterwards
+
+
+*/
 export default function reducer(state, action) {
   const type = {
     SET_DAY: () => ({ ...state, day: action.value }),

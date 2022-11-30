@@ -78,7 +78,7 @@ npm run storybook
 
 - [ ] write more tests to bring coverage up
 - [x] refactor newSpots function to operate independently -_UPDATE NOV:30/22_ Can be viewed on the web-socket branch
-  > This would allow an state update after a socket response
+  > This completes two state updates after a socket response, see the branch for more
 - [ ] add cookie management and login
 - [ ] replace the useVisualMode hook with useContext
 - [Back To Top](#)

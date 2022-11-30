@@ -9,15 +9,24 @@ The template can be found here: [LHL Scheduler](https://github.com/lighthouse-la
 - **READ THIS BEFORE ANYTHING ELSE**
 - **IF RUNNING IN LOCAL MACHINE ON DEV MODE**
 
-  > You will need to have the API server running in order to test the full functionality of the App.
+  > You will need to have the API server running to test the full functionality of the App.
 
   - Follow the instructions listed here: [LHL Scheduler-API](https://github.com/lighthouse-labs/scheduler-api)
 
 - **I have two branches:**
   - _main_, the main project
-  - _web_socket:_ showcasing my solution to the websocket stretch (refactored to separate file to allow for JEST test suite to pass)
+  - _web_socket:_ - showcasing my solution to the websocket stretch (refactored to separate file to allow for JEST test suite to pass) - This branch also has a refactored version of the spotsRemaining feature
+- [Back To Top](#)
 
 ### Setup
+
+1. Git clone to repo
+2. Navigate to this newly created directory on your local
+
+- Make sure to have the API cloned and running
+- configure your local proxies
+
+See Below:
 
 Install dependencies with `npm install`.
 
@@ -38,6 +47,8 @@ npm test
 ```sh
 npm run storybook
 ```
+
+- [Back To Top](#)
 
 ### Learning Outcomes
 
@@ -61,14 +72,16 @@ npm run storybook
   - The difference between Switch and Objects in Reducers
 - [x] WebSockets
   - Two browser tabs open will update automatically if one user makes a change, see the view for more
+- [Back To Top](#)
 
 ### Future Goals
 
 - [ ] write more tests to bring coverage up
-- [ ] refactor newSpots function to operate independently
+- [x] refactor newSpots function to operate independently -_UPDATE NOV:30/22_ Can be viewed on the web-socket branch
   > This would allow an state update after a socket response
 - [ ] add cookie management and login
-- [ ] remove the useVisualMode hook and replace with useContext
+- [ ] replace the useVisualMode hook with useContext
+- [Back To Top](#)
 
 ### Views
 
@@ -80,9 +93,12 @@ Regular Use
 Test Coverage
 ![Test Coverage report](./docs/Coverage.png)
 
+- [Back To Top](#)
+
 ### Known Bugs
 
-- _Clicking the cancel button immediately sends you back, better to have a quick confirmation_
+- _Clicking the cancel button immediately sends you back, would be better to have a quick confirmation_
+- _WebSocket implementation will not allow the JEST tests to pass_
 
 #### Dependencies
 
@@ -91,4 +107,7 @@ Test Coverage
 - react-test-renderer
 - classNames
 - Testing Dependencies
+
   > StoryBook, Cypress
+
+- [Back To Top](#)

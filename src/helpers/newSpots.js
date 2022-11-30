@@ -1,3 +1,5 @@
+// My original implementation here, this file is included for reference, this is not needed in either the Websocket implementation of the main
+
 export function getDayNameAsKey(day) {
   const daysOfTheWeek = [
     "Monday",
@@ -24,4 +26,11 @@ export const newSpots = ({ ...args }, id, action = null) => {
   const newSpot = { ...currDayObj, spots: spots };
   const newDays = args.days.map((x, i) => (i === dayIndex ? (x = newSpot) : x));
   return newDays;
+};
+
+export const spotsRefactored = (state) => {
+  const day = state.days.find((x) => x.name === state.day);
+  return day.appointments.reduce((prev, curr) => {
+    return state.appointments[curr].interview ? prev : prev + 1;
+  }, 0);
 };

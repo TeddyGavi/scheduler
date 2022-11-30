@@ -26,12 +26,14 @@ export default function useApplicationData() {
 
   useEffect(() => {
     getData();
-    const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+    const ws = new WebSocket(
+      process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8001"
+    );
 
-    ws.onmessage = async (e) => {
+    ws.onmessage = (e) => {
       let data = JSON.parse(e.data);
-      const res = await axios.get("/api/days");
-      dispatch({ type: "SOCKET", value: { data, days: res.data } });
+      // const res = await axios.get("/api/days"); THE SIMPLE AND SINGLE SOURCE OF TRUTH way to update days
+      dispatch({ type: data.type, value: { data } });
     };
     //clean up function to close the socket connection
     return () => {

@@ -1,3 +1,5 @@
+import { spotsRefactored } from "helpers/newSpots";
+
 export default function reducer(state, action) {
   const type = {
     SET_DAY: () => ({ ...state, day: action.value }),
@@ -7,17 +9,25 @@ export default function reducer(state, action) {
       appointments: action.value[1].data,
       interviewers: action.value[2].data,
     }),
-    SOCKET: () => {
-      //new appointment and days come from the socket response, an async function
-      const wsAppointment = {
-        ...state.appointments[action.value.data.id],
-        interview: { ...action.value.data.interview },
-      };
+    SET_INTERVIEW: () => {
       const wsStateUpdate = {
-        ...state.appointments,
-        [action.value.data.id]: wsAppointment,
+        ...state,
+        appointments: {
+          ...state.appointments,
+          [action.value.data.id]: {
+            ...state.appointments[action.value.data.id],
+            interview: action.value.data.interview,
+          },
+        },
       };
-      return { ...state, appointments: wsStateUpdate, days: action.value.days };
+
+      return {
+        ...wsStateUpdate,
+        days: state.days.map((x) => ({
+          ...x,
+          spots: spotsRefactored(wsStateUpdate, x.name),
+        })),
+      };
     },
     default: () => {
       return new Error(
